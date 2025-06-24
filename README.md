@@ -33,7 +33,7 @@
 
 ## ✨ 주요 기능
 
-* **자동 연결 관리**: `TunnelConfig` 빌더 또는 애너테이션으로 간단 설정
+* **자동 연결 관리**: `ConnectionManager` 빌더로 간단 설정
 * **Failover 지원**: 지수 백오프 기반 자동 재연결 및 토픽 재구독
 * **JSON 필드 추출**: JSONPath 기반 `PathFilterBuilder`로 손쉬운 값 조회
 * **임시 메시지 버퍼**: MQTT로 수신한 메시지를 버퍼에 저장(인메모리/Redis/Kafka 지원)
@@ -68,29 +68,7 @@ dependencies {
 
 ## 🚀 사용 예시
 
-### MQTT 연결 설정
-
-```kotlin
-val config = TunnelConfig.builder()
-    .brokerUrl("tcp://broker.hivemq.com:1883")
-    .clientId("my-client-id")
-    .topic("sensors/data")
-    .build()
-
-val tunnel = IoTDataTunnel(config)
-tunnel.connect()
-```
-
-### 연결 및 구독
-
-```kotlin
-tunnel.subscribe { topic, message ->
-    // message: JSON 문자열
-}
-```
-### ConnectionManager 사용
-
-기존 `IoTDataTunnel` 을 그대로 사용할 수도 있지만, MQTT 연결만 필요할 경우 `ConnectionManager` 클래스를 활용할 수 있습니다.
+### MQTT 연결 예시
 
 ```kotlin
 val manager = ConnectionManager.builder()
@@ -114,8 +92,11 @@ manager.addListener(object : ConnectionManager.ConnectionListener {
 
 manager.connect()
 
-// 수신된 메시지는 messageBuffer 에 임시 저장됩니다.
-val buffered = manager.messageBuffer.poll()
+val pair = manager.messageBuffer.poll()
+if (pair != null) {
+    val (_, message) = pair
+    println("received: ${'$'}message")
+}
 ```
 
 ### 메시지 버퍼 설정
