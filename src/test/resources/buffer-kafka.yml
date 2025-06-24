@@ -1,0 +1,5 @@
+iotdatatunnel:
+  buffer:
+    type: kafka
+    host: kserver
+    port: 9092

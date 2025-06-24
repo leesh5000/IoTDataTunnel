@@ -14,6 +14,7 @@ dependencies {
     implementation("org.eclipse.paho:org.eclipse.paho.client.mqttv3:1.2.5")
     implementation("org.jetbrains.kotlin:kotlin-stdlib")
     implementation("com.jayway.jsonpath:json-path:2.9.0")
+    implementation("org.yaml:snakeyaml:2.2")
 
     // Test dependencies
     testImplementation("org.mockito:mockito-core:5.11.0")

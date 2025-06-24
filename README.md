@@ -36,6 +36,7 @@
 * **자동 연결 관리**: `TunnelConfig` 빌더 또는 애너테이션으로 간단 설정
 * **Failover 지원**: 지수 백오프 기반 자동 재연결 및 토픽 재구독
 * **JSON 필드 추출**: JSONPath 기반 `PathFilterBuilder`로 손쉬운 값 조회
+* **임시 메시지 버퍼**: MQTT로 수신한 메시지를 버퍼에 저장(인메모리/Redis/Kafka 지원)
 
 ## 📦 빌드
 
@@ -112,7 +113,25 @@ manager.addListener(object : ConnectionManager.ConnectionListener {
 })
 
 manager.connect()
+
+// 수신된 메시지는 messageBuffer 에 임시 저장됩니다.
+val buffered = manager.messageBuffer.poll()
 ```
+
+### 메시지 버퍼 설정
+
+`application.yml` 파일에서 `iotdatatunnel.buffer.type` 을 지정하면 버퍼 구현체를 바꿀 수 있습니다.
+예를 들어 Redis 버퍼를 사용하려면 다음과 같이 설정합니다.
+
+```yaml
+iotdatatunnel:
+  buffer:
+    type: redis
+    host: localhost
+    port: 6379
+```
+
+타입으로 `inmemory`, `redis`, `kafka` 를 지원하며 기본값은 `inmemory` 입니다.
 
 ### JSON 추출
 

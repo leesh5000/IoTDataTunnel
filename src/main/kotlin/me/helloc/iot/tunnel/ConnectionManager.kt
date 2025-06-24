@@ -8,6 +8,8 @@ import org.eclipse.paho.client.mqttv3.MqttCallbackExtended
 import org.eclipse.paho.client.mqttv3.MqttConnectOptions
 import org.eclipse.paho.client.mqttv3.MqttException
 import org.eclipse.paho.client.mqttv3.MqttMessage
+import me.helloc.iot.tunnel.MessageBuffer
+import me.helloc.iot.tunnel.MessageBufferFactory
 import java.util.concurrent.CopyOnWriteArrayList
 import java.util.concurrent.Executors
 import java.util.concurrent.ScheduledExecutorService
@@ -29,6 +31,7 @@ class ConnectionManager private constructor(builder: Builder) {
     private val topics: Array<String> = builder.topics.toTypedArray()
     private val options: MqttConnectOptions = builder.options
     private val scheduler: ScheduledExecutorService = builder.scheduler ?: Executors.newSingleThreadScheduledExecutor()
+    val messageBuffer: MessageBuffer = builder.messageBuffer
     private val clientSupplier: () -> MqttAsyncClient = builder.clientSupplier ?: {
         MqttAsyncClient(brokerUrl, clientId)
     }
@@ -103,6 +106,9 @@ class ConnectionManager private constructor(builder: Builder) {
         }
 
         override fun messageArrived(topic: String?, message: MqttMessage?) {
+            if (topic != null && message != null) {
+                messageBuffer.add(topic, String(message.payload))
+            }
         }
 
         override fun deliveryComplete(token: IMqttDeliveryToken?) {
@@ -125,6 +131,8 @@ class ConnectionManager private constructor(builder: Builder) {
             private set
         var maxDelay: Long = 60000
             private set
+        var messageBuffer: MessageBuffer = MessageBufferFactory.fromConfig()
+            private set
 
         fun brokerUrl(brokerUrl: String) = apply { this.brokerUrl = brokerUrl }
         fun clientId(clientId: String) = apply { this.clientId = clientId }
@@ -134,6 +142,7 @@ class ConnectionManager private constructor(builder: Builder) {
         fun clientSupplier(supplier: () -> MqttAsyncClient) = apply { this.clientSupplier = supplier }
         fun initialDelay(delay: Long) = apply { this.initialDelay = delay }
         fun maxDelay(delay: Long) = apply { this.maxDelay = delay }
+        fun messageBuffer(buffer: MessageBuffer) = apply { this.messageBuffer = buffer }
 
         fun build(): ConnectionManager {
             require(!brokerUrl.isNullOrEmpty()) { "brokerUrl" }
