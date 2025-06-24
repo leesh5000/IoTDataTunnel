@@ -16,6 +16,4 @@ fun main() {
         .addPathFilter("$.companyCode", "0012")
         .addValueFilter("$.sensor[0].value")
         .extractFirst(Int::class.java)
-
-    println("추출된 온도: $temp")
 }

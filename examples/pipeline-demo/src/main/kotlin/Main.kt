@@ -1,9 +1,8 @@
-package me.helloc.example.pipelinedemo
-
 import me.helloc.iot.tunnel.ConnectionManager
 import me.helloc.iot.tunnel.PathFilterBuilder
 
 fun main() {
+
     val manager = ConnectionManager.builder()
         .brokerUrl("tcp://broker.hivemq.com:1883")
         .addTopic("sensors/data")

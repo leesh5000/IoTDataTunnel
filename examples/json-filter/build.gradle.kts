@@ -5,12 +5,14 @@ plugins {
 
 repositories {
     mavenCentral()
+    maven { url = uri("https://jitpack.io") }
 }
 
 dependencies {
-    implementation("me.helloc:iot-data-tunnel:1.0.0")
+    implementation("com.github.leesh5000:IoTDataTunnel:1.0.0")
+    implementation(kotlin("stdlib"))
 }
 
 application {
-    mainClass.set("me.helloc.example.jsonfilter.MainKt")
+    mainClass.set("Main")
 }
