@@ -37,6 +37,14 @@
 * **Failover 지원**: 지수 백오프 기반 자동 재연결 및 토픽 재구독
 * **JSON 필드 추출**: JSONPath 기반 `PathFilterBuilder`로 손쉬운 값 조회
 
+## 📦 빌드
+
+Gradle Wrapper가 포함되어 있으므로 다음 명령어로 프로젝트를 빌드할 수 있습니다.
+
+```bash
+./gradlew build
+```
+
 ## 🛠️ 설치
 
 **Maven**
