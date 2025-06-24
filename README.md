@@ -2,7 +2,7 @@
 
 > **경량 Java 라이브러리**로, 저전력·저대역폭 IoT 환경에서 MQTT 연동과 센서 데이터 JSON 추출을 간편화합니다.
 
-[![Maven Central](https://img.shields.io/maven-central/v/com.example/iot-data-tunnel)](https://search.maven.org/artifact/com.example/iot-data-tunnel)
+[![Maven Central](https://img.shields.io/maven-central/v/me.helloc/iot-data-tunnel)](https://search.maven.org/artifact/me.helloc/iot-data-tunnel)
 [![MIT License](https://img.shields.io/badge/license-MIT-blue)](LICENSE)
 
 ---
@@ -51,7 +51,7 @@ Gradle Wrapper가 포함되어 있으므로 다음 명령어로 프로젝트를 
 
 ```xml
 <dependency>
-  <groupId>com.example</groupId>
+  <groupId>me.helloc</groupId>
   <artifactId>iot-data-tunnel</artifactId>
   <version>1.0.0</version>
 </dependency>
@@ -61,7 +61,7 @@ Gradle Wrapper가 포함되어 있으므로 다음 명령어로 프로젝트를 
 
 ```groovy
 dependencies {
-  implementation 'com.example:iot-data-tunnel:1.0.0'
+  implementation 'me.helloc:iot-data-tunnel:1.0.0'
 }
 ```
 
