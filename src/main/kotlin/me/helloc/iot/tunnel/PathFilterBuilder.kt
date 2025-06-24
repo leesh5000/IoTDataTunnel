@@ -1,4 +1,4 @@
-package com.example.iot.tunnel
+package me.helloc.iot.tunnel
 
 import com.jayway.jsonpath.JsonPath
 import kotlin.jvm.javaPrimitiveType
