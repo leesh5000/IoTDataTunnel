@@ -8,19 +8,6 @@ fun main() {
         .addTopic("sensors/data")
         .build()
 
-    manager.addListener(object : ConnectionManager.ConnectionListener {
-        override fun onConnected() {
-            println("Connected")
-        }
-
-        override fun onConnectionLost(cause: Throwable) {
-            println("Connection lost: ${'$'}{cause.message}")
-        }
-
-        override fun onDisconnected() {
-            println("Disconnected")
-        }
-    })
-
+    manager.addListener(DefaultConnectionListener())
     manager.connect()
 }
