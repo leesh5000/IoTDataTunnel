@@ -95,7 +95,7 @@ manager.connect()
 val pair = manager.messageBuffer.poll()
 if (pair != null) {
     val (_, message) = pair
-    println("received: ${'$'}message")
+    println("received: $message")
 }
 ```
 
