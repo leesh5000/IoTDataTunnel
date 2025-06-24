@@ -32,7 +32,11 @@ class PathFilterBuilder private constructor(private val message: String) {
             } catch (_: Exception) {
                 return null
             }
-            if (actual != expected) return null
+            if (actual is Number && expected is Number) {
+                if (actual.toDouble() != expected.toDouble()) return null
+            } else if (actual != expected) {
+                return null
+            }
         }
         for (path in valueFilters) {
             val raw = try {
