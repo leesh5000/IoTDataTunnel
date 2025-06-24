@@ -61,23 +61,49 @@ dependencies {
 
 ### MQTT 연결 설정
 
-```java
-TunnelConfig config = TunnelConfig.builder()
+```kotlin
+val config = TunnelConfig.builder()
     .brokerUrl("tcp://broker.hivemq.com:1883")
     .clientId("my-client-id")
     .topic("sensors/data")
-    .build();
+    .build()
 
-IoTDataTunnel tunnel = new IoTDataTunnel(config);
-tunnel.connect();
+val tunnel = IoTDataTunnel(config)
+tunnel.connect()
 ```
 
 ### 연결 및 구독
 
-```java
-tunnel.subscribe((topic, message) -> {
+```kotlin
+tunnel.subscribe { topic, message ->
     // message: JSON 문자열
-});
+}
+```
+### ConnectionManager 사용
+
+기존 `IoTDataTunnel` 을 그대로 사용할 수도 있지만, MQTT 연결만 필요할 경우 `ConnectionManager` 클래스를 활용할 수 있습니다.
+
+```kotlin
+val manager = ConnectionManager.builder()
+    .brokerUrl("tcp://broker.hivemq.com:1883")
+    .addTopic("sensors/data")
+    .build()
+
+manager.addListener(object : ConnectionManager.ConnectionListener {
+    override fun onConnected() {
+        println("connected")
+    }
+
+    override fun onConnectionLost(cause: Throwable) {
+        println("lost: ${'$'}{cause.message}")
+    }
+
+    override fun onDisconnected() {
+        println("disconnected")
+    }
+})
+
+manager.connect()
 ```
 
 ### JSON 추출
@@ -98,14 +124,14 @@ tunnel.subscribe((topic, message) -> {
 }
 ```
 
-```java
-int tempValue = PathFilterBuilder.from(message)
+```kotlin
+val tempValue = PathFilterBuilder.from(message)
     .addPathFilter("$.id", 1)
     .addPathFilter("$.gateways[0].id", 1)
     .addPathFilter("$.companyCode", "0012")
     .addValueFilter("$.sensor[0].value")
-    .extractFirst(Integer.class);
-System.out.println("추출된 온도: " + tempValue);
+    .extractFirst(Int::class.java)
+println("추출된 온도: $tempValue")
 ```
 
 ## 🤝 기여하기
