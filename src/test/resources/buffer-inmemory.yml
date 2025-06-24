@@ -1,0 +1,3 @@
+iotdatatunnel:
+  buffer:
+    type: inmemory
