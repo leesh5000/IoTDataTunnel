@@ -161,6 +161,15 @@ val tempValue = PathFilterBuilder.from(message)
 println("추출된 온도: $tempValue")
 ```
 
+
+## 💡 예제 프로젝트
+
+`examples` 디렉터리에는 라이브러리 사용 방법을 보여 주는 간단한 데모 프로젝트가 포함되어 있습니다.
+
+- **mqtt-subscriber**: `ConnectionManager` 로 MQTT 브로커에 연결하여 메시지를 수신합니다.
+- **json-filter**: `PathFilterBuilder` 를 이용해 JSON 메시지에서 값을 추출하는 방법을 보여 줍니다.
+- **pipeline-demo**: MQTT 연결 후 메시지를 버퍼에 저장하고 `PathFilterBuilder` 로 필요한 값을 추출하는 과정을 보여 줍니다.
+
 ## 🤝 기여하기
 
 1. 이슈(issue)를 등록하거나 토론에 참여하세요.
