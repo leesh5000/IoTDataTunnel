@@ -1,4 +1,4 @@
-package com.example.iot.tunnel
+package me.helloc.iot.tunnel
 
 import io.kotest.core.spec.style.StringSpec
 import io.kotest.matchers.shouldBe
