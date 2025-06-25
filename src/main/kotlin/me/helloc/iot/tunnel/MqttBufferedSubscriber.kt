@@ -18,12 +18,18 @@ import java.util.concurrent.TimeUnit
 /**
  * Manages MQTT connection with automatic reconnection and subscription restoration.
  */
-class ConnectionManager private constructor(builder: Builder) {
+class MqttBufferedSubscriber private constructor(builder: Builder) {
 
     interface ConnectionListener {
         fun onConnected()
         fun onConnectionLost(cause: Throwable)
         fun onDisconnected()
+    }
+
+    interface MessageListener {
+        fun onMessageReceived(topic: String, message: String)
+        fun onBufferedBefore(topic: String, message: String)
+        fun onBufferedAfter(topic: String, message: String)
     }
 
     private val brokerUrl: String = builder.brokerUrl!!
@@ -39,6 +45,7 @@ class ConnectionManager private constructor(builder: Builder) {
         setCallback(InternalCallback())
     }
     private val listeners = CopyOnWriteArrayList<ConnectionListener>()
+    private val messageListeners = CopyOnWriteArrayList<MessageListener>()
     private val initialDelay: Long = builder.initialDelay
     private val maxDelay: Long = builder.maxDelay
     @Volatile private var currentDelay: Long = initialDelay
@@ -49,6 +56,14 @@ class ConnectionManager private constructor(builder: Builder) {
 
     fun removeListener(listener: ConnectionListener) {
         listeners.remove(listener)
+    }
+
+    fun addMessageListener(listener: MessageListener) {
+        messageListeners.add(listener)
+    }
+
+    fun removeMessageListener(listener: MessageListener) {
+        messageListeners.remove(listener)
     }
 
     fun connect() {
@@ -107,7 +122,11 @@ class ConnectionManager private constructor(builder: Builder) {
 
         override fun messageArrived(topic: String?, message: MqttMessage?) {
             if (topic != null && message != null) {
-                messageBuffer.add(topic, String(message.payload))
+                val payload = String(message.payload)
+                messageListeners.forEach { it.onMessageReceived(topic, payload) }
+                messageListeners.forEach { it.onBufferedBefore(topic, payload) }
+                messageBuffer.add(topic, payload)
+                messageListeners.forEach { it.onBufferedAfter(topic, payload) }
             }
         }
 
@@ -144,9 +163,9 @@ class ConnectionManager private constructor(builder: Builder) {
         fun maxDelay(delay: Long) = apply { this.maxDelay = delay }
         fun messageBuffer(buffer: MessageBuffer) = apply { this.messageBuffer = buffer }
 
-        fun build(): ConnectionManager {
+        fun build(): MqttBufferedSubscriber {
             require(!brokerUrl.isNullOrEmpty()) { "brokerUrl" }
-            return ConnectionManager(this)
+            return MqttBufferedSubscriber(this)
         }
     }
 

@@ -13,7 +13,7 @@ import java.util.concurrent.ScheduledExecutorService
 import java.util.concurrent.ScheduledFuture
 import java.util.concurrent.TimeUnit
 
-class ConnectionManagerTest {
+class MqttBufferedSubscriberTest {
 
     @Test
     fun connectSuccessNotifiesListener() {
@@ -23,8 +23,8 @@ class ConnectionManagerTest {
             mock(ScheduledFuture::class.java) as ScheduledFuture<*>
         )
 
-        val listener = mock(ConnectionManager.ConnectionListener::class.java)
-        val manager = ConnectionManager.builder()
+        val listener = mock(MqttBufferedSubscriber.ConnectionListener::class.java)
+        val manager = MqttBufferedSubscriber.builder()
             .brokerUrl("tcp://localhost:1883")
             .addTopic("test")
             .clientSupplier { client }
@@ -54,7 +54,7 @@ class ConnectionManagerTest {
             mock(ScheduledFuture::class.java) as ScheduledFuture<*>
         }
 
-        val manager = ConnectionManager.builder()
+        val manager = MqttBufferedSubscriber.builder()
             .brokerUrl("tcp://localhost:1883")
             .clientSupplier { client }
             .scheduler(scheduler)
@@ -83,8 +83,8 @@ class ConnectionManagerTest {
             mock(ScheduledFuture::class.java) as ScheduledFuture<*>
         }
 
-        val listener = mock(ConnectionManager.ConnectionListener::class.java)
-        val manager = ConnectionManager.builder()
+        val listener = mock(MqttBufferedSubscriber.ConnectionListener::class.java)
+        val manager = MqttBufferedSubscriber.builder()
             .brokerUrl("tcp://localhost:1883")
             .addTopic("test")
             .clientSupplier { client }

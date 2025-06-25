@@ -33,7 +33,7 @@
 
 ## ✨ 주요 기능
 
-* **자동 연결 관리**: `ConnectionManager` 빌더로 간단 설정
+* **자동 연결 관리**: `MqttBufferedSubscriber` 빌더로 간단 설정
 * **Failover 지원**: 지수 백오프 기반 자동 재연결 및 토픽 재구독
 * **JSON 필드 추출**: 경량 경로 파서를 사용하는 `PathFilterBuilder`로 손쉬운 값 조회
 * **임시 메시지 버퍼**: MQTT로 수신한 메시지를 버퍼에 저장(인메모리/Redis/Kafka 지원)
@@ -71,12 +71,12 @@ dependencies {
 ### MQTT 연결 예시
 
 ```kotlin
-val manager = ConnectionManager.builder()
+val manager = MqttBufferedSubscriber.builder()
     .brokerUrl("tcp://broker.hivemq.com:1883")
     .addTopic("sensors/data")
     .build()
 
-manager.addListener(object : ConnectionManager.ConnectionListener {
+manager.addListener(object : MqttBufferedSubscriber.ConnectionListener {
     override fun onConnected() {
         println("connected")
     }
@@ -147,7 +147,7 @@ println("추출된 온도: $tempValue")
 
 `examples` 디렉터리에는 라이브러리 사용 방법을 보여 주는 간단한 데모 프로젝트가 포함되어 있습니다.
 
-- **mqtt-subscriber**: `ConnectionManager` 로 MQTT 브로커에 연결하여 메시지를 수신합니다.
+- **mqtt-subscriber**: `MqttBufferedSubscriber` 로 MQTT 브로커에 연결하여 메시지를 수신합니다.
 - **json-filter**: `PathFilterBuilder` 를 이용해 JSON 메시지에서 값을 추출하는 방법을 보여 줍니다.
 - **pipeline-demo**: MQTT 연결 후 메시지를 버퍼에 저장하고 `PathFilterBuilder` 로 필요한 값을 추출하는 과정을 보여 줍니다.
 
