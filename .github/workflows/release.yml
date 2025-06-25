@@ -1,0 +1,56 @@
+---
+name: Release
+
+"on":
+  push:
+    branches: [main]
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v3
+
+      - name: Set up JDK
+        uses: actions/setup-java@v3
+        with:
+          distribution: 'temurin'
+          java-version: '21'
+
+      - name: Run tests
+        run: ./gradlew test
+
+      - name: Get version
+        id: version
+        run: |
+          VERSION=$(grep '^version' build.gradle.kts | cut -d '"' -f2)
+          echo "version=$VERSION" >> $GITHUB_OUTPUT
+
+      - name: Generate changelog
+        id: changelog
+        run: |
+          PREV=$(git describe --tags --abbrev=0 HEAD^ 2>/dev/null || echo '')
+          if [ -z "$PREV" ]; then
+            git log --oneline > CHANGELOG.txt
+          else
+            git log "$PREV"..HEAD --oneline > CHANGELOG.txt
+          fi
+          cat CHANGELOG.txt
+          LOG=$(sed ':a;N;$!ba;s/\n/%0A/g' CHANGELOG.txt)
+          echo "log=$LOG" >> $GITHUB_OUTPUT
+
+      - name: Create Release
+        uses: softprops/action-gh-release@v2
+        with:
+          tag_name: ${{ steps.version.outputs.version }}
+          name: ${{ steps.version.outputs.version }}
+          body: ${{ steps.changelog.outputs.log }}
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Trigger JitPack build
+        run: |
+          VERSION=${{ steps.version.outputs.version }}
+          API="https://jitpack.io/api/builds/leesh5000/IoTDataTunnel/$VERSION"
+          curl -X POST "$API" || true

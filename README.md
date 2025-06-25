@@ -151,6 +151,12 @@ println("추출된 온도: $tempValue")
 - **json-filter**: `PathFilterBuilder` 를 이용해 JSON 메시지에서 값을 추출하는 방법을 보여 줍니다.
 - **pipeline-demo**: MQTT 연결 후 메시지를 버퍼에 저장하고 `PathFilterBuilder` 로 필요한 값을 추출하는 과정을 보여 줍니다.
 
+## 📦 자동 배포
+
+Main 브랜치로 머지되면 GitHub Actions 파이프라인이 실행되어 테스트 후 `build.gradle.kts`에 지정된
+버전으로 GitHub 태그와 릴리스를 자동으로 생성합니다. 릴리스 노트는 이전 태그부터의 커밋 메시지로
+채워지며, 릴리스가 성공하면 동일한 버전으로 JitPack 빌드가 실행됩니다.
+
 ## 🤝 기여하기
 
 1. 이슈(issue)를 등록하거나 토론에 참여하세요.
