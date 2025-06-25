@@ -5,6 +5,9 @@ name: Release
   push:
     branches: [main]
 
+permissions:
+  contents: write
+
 jobs:
   build:
     runs-on: ubuntu-latest
@@ -27,6 +30,15 @@ jobs:
           VERSION=$(grep '^version' build.gradle.kts | cut -d '"' -f2)
           echo "version=$VERSION" >> $GITHUB_OUTPUT
 
+      - name: Check if tag exists
+        id: tagcheck
+        run: |
+          if git rev-parse "${{ steps.version.outputs.version }}" >/dev/null 2>&1; then
+            echo "exists=true" >> $GITHUB_OUTPUT
+          else
+            echo "exists=false" >> $GITHUB_OUTPUT
+          fi
+
       - name: Generate changelog
         id: changelog
         run: |
@@ -41,6 +53,7 @@ jobs:
           echo "log=$LOG" >> $GITHUB_OUTPUT
 
       - name: Create Release
+        if: steps.tagcheck.outputs.exists == 'false'
         uses: softprops/action-gh-release@v2
         with:
           tag_name: ${{ steps.version.outputs.version }}
@@ -50,6 +63,7 @@ jobs:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
       - name: Trigger JitPack build
+        if: steps.tagcheck.outputs.exists == 'false'
         run: |
           VERSION=${{ steps.version.outputs.version }}
           API="https://jitpack.io/api/builds/leesh5000/IoTDataTunnel/$VERSION"
