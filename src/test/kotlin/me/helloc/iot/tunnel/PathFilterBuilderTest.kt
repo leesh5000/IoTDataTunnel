@@ -75,4 +75,21 @@ class PathFilterBuilderTest : StringSpec({
 
         result shouldBe true
     }
+
+    "matches numeric path filters across types" {
+        val result = PathFilterBuilder.from(message)
+            .addPathFilter("$.id", 1L)
+            .addValueFilter("$.sensor[0].value")
+            .extractFirst(Double::class.java)
+
+        result shouldBe 39.0
+    }
+
+    "converts extracted number to target type" {
+        val result = PathFilterBuilder.from(message)
+            .addValueFilter("$.sensor[0].value")
+            .extractFirst(Long::class.java)
+
+        result shouldBe 39L
+    }
 })
