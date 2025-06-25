@@ -19,17 +19,24 @@ class MessageBufferTest : StringSpec({
         whenever(scheduler.schedule(org.mockito.kotlin.any<Runnable>(), org.mockito.kotlin.any<Long>(), org.mockito.kotlin.any()))
             .thenReturn(mock<ScheduledFuture<*>>())
 
-        val manager = ConnectionManager.builder()
+        val manager = MqttBufferedSubscriber.builder()
             .brokerUrl("tcp://localhost:1883")
             .clientSupplier { client }
             .scheduler(scheduler)
             .build()
+
+        val msgListener = mock<MqttBufferedSubscriber.MessageListener>()
+        manager.addMessageListener(msgListener)
 
         val captor = argumentCaptor<MqttCallbackExtended>()
         verify(client).setCallback(captor.capture())
 
         val message = MqttMessage("data".toByteArray())
         captor.firstValue.messageArrived("test/topic", message)
+
+        verify(msgListener).onMessageReceived("test/topic", "data")
+        verify(msgListener).onBufferedBefore("test/topic", "data")
+        verify(msgListener).onBufferedAfter("test/topic", "data")
 
         manager.messageBuffer.poll() shouldBe ("test/topic" to "data")
     }

@@ -1,14 +1,14 @@
-import me.helloc.iot.tunnel.ConnectionManager
+import me.helloc.iot.tunnel.MqttBufferedSubscriber
 import me.helloc.iot.tunnel.PathFilterBuilder
 
 fun main() {
 
-    val manager = ConnectionManager.builder()
+    val manager = MqttBufferedSubscriber.builder()
         .brokerUrl("tcp://broker.hivemq.com:1883")
         .addTopic("sensors/data")
         .build()
 
-    manager.addListener(object : ConnectionManager.ConnectionListener {
+    manager.addListener(object : MqttBufferedSubscriber.ConnectionListener {
         override fun onConnected() {
             println("Connected")
         }
