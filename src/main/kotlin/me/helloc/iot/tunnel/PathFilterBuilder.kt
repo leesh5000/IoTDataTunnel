@@ -106,7 +106,7 @@ class PathFilterBuilder private constructor(private val message: String) {
                     i++
                     val start = i
                     while (i < path.length && path[i] != ']') i++
-                    val idx = path.substring(start, i).toIntOrNull() ?: return emptyList()
+                    val idx = path.substring(start, i).toIntOrNull() ?: throw IllegalArgumentException("Invalid numeric index in path: '$path'")
                     tokens.add(PathToken.Index(idx))
                     if (i < path.length && path[i] == ']') i++
                 }
