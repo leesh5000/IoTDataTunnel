@@ -1,17 +1,7 @@
-<h1 align="center">IoTDataTunnel</h1>
+# IoTDataTunnel
 
-<p align="center">
-  경량 Java 라이브러리로서 MQTT 연결 관리와 JSON 센서 데이터 추출을 간소화합니다.
-</p>
-
-<p align="center">
-  <a href="https://search.maven.org/artifact/me.helloc/iot-data-tunnel">
-    <img src="https://img.shields.io/maven-central/v/me.helloc/iot-data-tunnel.svg" alt="Maven Central">
-  </a>
-  <a href="LICENSE">
-    <img src="https://img.shields.io/badge/license-MIT-blue" alt="MIT License">
-  </a>
-</p>
+[![](https://jitpack.io/v/leesh5000/IoTDataTunnel.svg)](https://jitpack.io/#leesh5000/IoTDataTunnel)
+![MIT License](https://img.shields.io/badge/license-MIT-blue.svg)
 
 ```kotlin
 val subscriber = MqttBufferedSubscriber.builder()
@@ -33,14 +23,27 @@ if (pair != null) {
 
 ## Features
 
-- 자동 연결 관리 및 실패 복구
+- MQTT 자동 연결 관리 및 실패 복구
 - JSON 경로 기반 필드 추출
-- 인메모리/Redis/Kafka 메시지 버퍼
+- 메세지 버퍼 인터페이스를 통한 다양한 저장소 지원
 - 세밀한 MQTT 설정
 
 ## Installation
 
 ### Maven
+
+1. Add to pom.xml
+
+```xml
+<repositories>
+    <repository>
+        <id>jitpack.io</id>
+        <url>https://jitpack.io</url>
+    </repository>
+</repositories>
+```
+
+2. Add the dependency
 
 ```xml
 <dependency>
@@ -52,9 +55,23 @@ if (pair != null) {
 
 ### Gradle
 
-```kotlin
+1. Add it in your root settings.gradle at the end of repositories
+
+```groovy
+dependencyResolutionManagement {
+    repositoriesMode.set(RepositoriesMode.FAIL_ON_PROJECT_REPOS)
+    repositories {
+        mavenCentral()
+        maven { url 'https://jitpack.io' }
+    }
+}
+```
+
+Step 2. Add the dependency
+
+```groovy
 dependencies {
-    implementation("me.helloc:iot-data-tunnel:1.0.3")
+        implementation 'com.github.leesh5000:IoTDataTunnel:Tag'
 }
 ```
 

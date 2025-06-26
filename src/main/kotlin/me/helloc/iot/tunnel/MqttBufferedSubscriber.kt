@@ -8,8 +8,6 @@ import org.eclipse.paho.client.mqttv3.MqttCallbackExtended
 import org.eclipse.paho.client.mqttv3.MqttConnectOptions
 import org.eclipse.paho.client.mqttv3.MqttException
 import org.eclipse.paho.client.mqttv3.MqttMessage
-import me.helloc.iot.tunnel.MessageBuffer
-import me.helloc.iot.tunnel.MessageBufferFactory
 import java.util.concurrent.CopyOnWriteArrayList
 import java.util.concurrent.Executors
 import java.util.concurrent.ScheduledExecutorService
@@ -151,7 +149,7 @@ class MqttBufferedSubscriber private constructor(builder: Builder) {
             private set
         var maxDelay: Long = 60000
             private set
-        var messageBuffer: MessageBuffer = MessageBufferFactory.fromConfig()
+        var messageBuffer: MessageBuffer = InMemoryMessageBuffer()
             private set
         var qos: Int = 1
             private set
