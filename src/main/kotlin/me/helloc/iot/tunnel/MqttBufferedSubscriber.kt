@@ -48,6 +48,7 @@ class MqttBufferedSubscriber private constructor(builder: Builder) {
     private val messageListeners = CopyOnWriteArrayList<MessageListener>()
     private val initialDelay: Long = builder.initialDelay
     private val maxDelay: Long = builder.maxDelay
+    private val qos: Int = builder.qos
     @Volatile private var currentDelay: Long = initialDelay
 
     fun addListener(listener: ConnectionListener) {
@@ -101,7 +102,7 @@ class MqttBufferedSubscriber private constructor(builder: Builder) {
     private fun subscribeAll() {
         for (topic in topics) {
             try {
-                client.subscribe(topic, 1)
+                client.subscribe(topic, qos)
             } catch (_: MqttException) {
             }
         }
@@ -152,6 +153,8 @@ class MqttBufferedSubscriber private constructor(builder: Builder) {
             private set
         var messageBuffer: MessageBuffer = MessageBufferFactory.fromConfig()
             private set
+        var qos: Int = 1
+            private set
 
         fun brokerUrl(brokerUrl: String) = apply { this.brokerUrl = brokerUrl }
         fun clientId(clientId: String) = apply { this.clientId = clientId }
@@ -162,6 +165,10 @@ class MqttBufferedSubscriber private constructor(builder: Builder) {
         fun initialDelay(delay: Long) = apply { this.initialDelay = delay }
         fun maxDelay(delay: Long) = apply { this.maxDelay = delay }
         fun messageBuffer(buffer: MessageBuffer) = apply { this.messageBuffer = buffer }
+        fun qos(qos: Int) = apply {
+            require(qos in 0..2) { "QoS must be between 0 and 2" }
+            this.qos = qos
+        }
 
         fun build(): MqttBufferedSubscriber {
             require(!brokerUrl.isNullOrEmpty()) { "brokerUrl" }

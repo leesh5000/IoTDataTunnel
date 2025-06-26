@@ -37,6 +37,7 @@
 * **Failover 지원**: 지수 백오프 기반 자동 재연결 및 토픽 재구독
 * **JSON 필드 추출**: 경량 경로 파서를 사용하는 `PathFilterBuilder`로 손쉬운 값 조회
 * **임시 메시지 버퍼**: MQTT로 수신한 메시지를 버퍼에 저장(인메모리/Redis/Kafka 지원)
+* **세밀한 MQTT 설정**: 구독 QoS와 재연결 지연(initialDelay, maxDelay) 값을 직접 지정 가능
 
 ## 📦 빌드
 
@@ -73,7 +74,10 @@ dependencies {
 ```kotlin
 val manager = MqttBufferedSubscriber.builder()
     .brokerUrl("tcp://broker.hivemq.com:1883")
+    .initialDelay(1000)
+    .maxDelay(60000)
     .addTopic("sensors/data")
+    .qos(1)
     .build()
 
 manager.addListener(object : MqttBufferedSubscriber.ConnectionListener {
