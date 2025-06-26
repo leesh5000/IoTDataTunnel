@@ -14,8 +14,6 @@ jobs:
     steps:
       - name: Checkout
         uses: actions/checkout@v3
-        with:
-          fetch-depth: 0
 
       - name: Set up JDK
         uses: actions/setup-java@v3
@@ -32,49 +30,17 @@ jobs:
           VERSION=$(grep '^version' build.gradle.kts | cut -d '"' -f2)
           echo "version=$VERSION" >> $GITHUB_OUTPUT
 
-      - name: Detect version change
-        id: version_changed
-        run: |
-          PREV=$(git show HEAD^:build.gradle.kts | grep '^version' | cut -d '"' -f2 || echo '')
-          if [ "$PREV" = "${{ steps.version.outputs.version }}" ]; then
-            echo "changed=false" >> $GITHUB_OUTPUT
-          else
-            echo "changed=true" >> $GITHUB_OUTPUT
-          fi
-
       - name: Check if tag exists
-        if: steps.version_changed.outputs.changed == 'true'
         id: tagcheck
         run: |
-          git fetch --tags
           if git rev-parse "${{ steps.version.outputs.version }}" >/dev/null 2>&1; then
             echo "exists=true" >> $GITHUB_OUTPUT
           else
             echo "exists=false" >> $GITHUB_OUTPUT
           fi
 
-      - name: Check if release exists
-        if: steps.version_changed.outputs.changed == 'true'
-        id: releasecheck
-        env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-        run: |
-          TAG=${{ steps.version.outputs.version }}
-          STATUS=$(curl -o /dev/null -w "%{http_code}" -s -H "Authorization: token $GITHUB_TOKEN" \
-            "https://api.github.com/repos/${{ github.repository }}/releases/tags/$TAG")
-          if [ "$STATUS" = "200" ]; then
-            echo "exists=true" >> $GITHUB_OUTPUT
-          else
-            echo "exists=false" >> $GITHUB_OUTPUT
-          fi
-
-      - name: Version unchanged message
-        if: steps.version_changed.outputs.changed == 'false'
-        run: echo "버전이 변경되지 않아 릴리스를 건너뜁니다"
-
       - name: Generate changelog
         id: changelog
-        if: steps.version_changed.outputs.changed == 'true' && steps.tagcheck.outputs.exists == 'false' && steps.releasecheck.outputs.exists == 'false'
         run: |
           PREV=$(git describe --tags --abbrev=0 HEAD^ 2>/dev/null || echo '')
           if [ -z "$PREV" ]; then
@@ -86,12 +52,8 @@ jobs:
           LOG=$(sed ':a;N;$!ba;s/\n/%0A/g' CHANGELOG.txt)
           echo "log=$LOG" >> $GITHUB_OUTPUT
 
-      - name: Tag already exists message
-        if: steps.version_changed.outputs.changed == 'true' && (steps.tagcheck.outputs.exists == 'true' || steps.releasecheck.outputs.exists == 'true')
-        run: echo "동일한 태그가 존재하여 중단한다"
-
       - name: Create Release
-        if: steps.version_changed.outputs.changed == 'true' && steps.tagcheck.outputs.exists == 'false' && steps.releasecheck.outputs.exists == 'false'
+        if: steps.tagcheck.outputs.exists == 'false'
         uses: softprops/action-gh-release@v2
         with:
           tag_name: ${{ steps.version.outputs.version }}
@@ -101,7 +63,7 @@ jobs:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
       - name: Trigger JitPack build
-        if: steps.version_changed.outputs.changed == 'true' && steps.tagcheck.outputs.exists == 'false' && steps.releasecheck.outputs.exists == 'false'
+        if: steps.tagcheck.outputs.exists == 'false'
         run: |
           VERSION=${{ steps.version.outputs.version }}
           API="https://jitpack.io/api/builds/leesh5000/IoTDataTunnel/$VERSION"
