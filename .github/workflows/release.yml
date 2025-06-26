@@ -7,7 +7,6 @@ name: Release
 
 permissions:
   contents: write
-  actions: write # Required to cancel the workflow
 
 jobs:
   build:
@@ -15,9 +14,6 @@ jobs:
     steps:
       - name: Checkout
         uses: actions/checkout@v3
-        with:
-          # Fetches all history for all branches and tags to check for existing tags
-          fetch-depth: 0
 
       - name: Set up JDK
         uses: actions/setup-java@v3
@@ -34,40 +30,30 @@ jobs:
           VERSION=$(grep '^version' build.gradle.kts | cut -d '"' -f2)
           echo "version=$VERSION" >> $GITHUB_OUTPUT
 
-      - name: Check if tag already exists
-        id: tag_check
+      - name: Check if tag exists
+        id: tagcheck
         run: |
-          if git tag --list | grep -q "^${{ steps.version.outputs.version }}$"; then
-            echo "Tag ${{ steps.version.outputs.version }} already exists. Stopping workflow."
+          if git rev-parse "${{ steps.version.outputs.version }}" >/dev/null 2>&1; then
             echo "exists=true" >> $GITHUB_OUTPUT
           else
-            echo "Tag ${{ steps.version.outputs.version }} does not exist. Proceeding with release."
             echo "exists=false" >> $GITHUB_OUTPUT
           fi
-
-      - name: Stop workflow if tag exists
-        if: steps.tag_check.outputs.exists == 'true'
-        uses: andymckay/cancel-action@v0
-        with:
-          token: ${{ secrets.GITHUB_TOKEN }}
 
       - name: Generate changelog
         id: changelog
         run: |
           PREV=$(git describe --tags --abbrev=0 HEAD^ 2>/dev/null || echo '')
           if [ -z "$PREV" ]; then
-            LOG_BODY=$(git log --oneline --pretty=format:"- %s (%h)")
+            git log --oneline > CHANGELOG.txt
           else
-            LOG_BODY=$(git log "$PREV"..HEAD --oneline --pretty=format:"- %s (%h)")
+            git log "$PREV"..HEAD --oneline > CHANGELOG.txt
           fi
-          echo "Changelog:"
-          echo "$LOG_BODY"
-          LOG_BODY="${LOG_BODY//'%'/'%25'}"
-          LOG_BODY="${LOG_BODY//$'\n'/'%0A'}"
-          LOG_BODY="${LOG_BODY//$'\r'/'%0D'}"
-          echo "log=$LOG_BODY" >> $GITHUB_OUTPUT
+          cat CHANGELOG.txt
+          LOG=$(sed ':a;N;$!ba;s/\n/%0A/g' CHANGELOG.txt)
+          echo "log=$LOG" >> $GITHUB_OUTPUT
 
       - name: Create Release
+        if: steps.tagcheck.outputs.exists == 'false'
         uses: softprops/action-gh-release@v2
         with:
           tag_name: ${{ steps.version.outputs.version }}
@@ -77,7 +63,8 @@ jobs:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
       - name: Trigger JitPack build
+        if: steps.tagcheck.outputs.exists == 'false'
         run: |
           VERSION=${{ steps.version.outputs.version }}
           API="https://jitpack.io/api/builds/leesh5000/IoTDataTunnel/$VERSION"
-          curl -s -X POST "$API" || true
+          curl -X POST "$API" || true
