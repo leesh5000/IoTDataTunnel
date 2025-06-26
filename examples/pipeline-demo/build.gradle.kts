@@ -9,7 +9,7 @@ repositories {
 }
 
 dependencies {
-    implementation("com.github.leesh5000:IoTDataTunnel:1.0.0")
+    implementation("com.github.leesh5000:IoTDataTunnel:1.0.2")
     implementation(kotlin("stdlib"))
 }
 
