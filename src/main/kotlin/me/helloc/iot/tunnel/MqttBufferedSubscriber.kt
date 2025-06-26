@@ -166,7 +166,7 @@ class MqttBufferedSubscriber private constructor(builder: Builder) {
         fun maxDelay(delay: Long) = apply { this.maxDelay = delay }
         fun messageBuffer(buffer: MessageBuffer) = apply { this.messageBuffer = buffer }
         fun qos(qos: Int) = apply {
-            require(qos in 0..2) { "qos" }
+            require(qos in 0..2) { "QoS must be between 0 and 2" }
             this.qos = qos
         }
 
