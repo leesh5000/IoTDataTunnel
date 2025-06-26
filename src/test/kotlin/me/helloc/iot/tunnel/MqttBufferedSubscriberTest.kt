@@ -27,6 +27,7 @@ class MqttBufferedSubscriberTest {
         val manager = MqttBufferedSubscriber.builder()
             .brokerUrl("tcp://localhost:1883")
             .addTopic("test")
+            .qos(1)
             .clientSupplier { client }
             .scheduler(scheduler)
             .build()
@@ -60,6 +61,7 @@ class MqttBufferedSubscriberTest {
             .scheduler(scheduler)
             .initialDelay(10)
             .maxDelay(20)
+            .qos(1)
             .build()
 
         val captor = ArgumentCaptor.forClass(IMqttActionListener::class.java)
@@ -91,6 +93,7 @@ class MqttBufferedSubscriberTest {
             .scheduler(scheduler)
             .initialDelay(10)
             .maxDelay(20)
+            .qos(2)
             .build()
         manager.addListener(listener)
 
@@ -108,7 +111,7 @@ class MqttBufferedSubscriberTest {
         connectCaptor.allValues[1].onSuccess(mock(IMqttToken::class.java))
 
         verify(scheduler).schedule(any(Runnable::class.java), eq(10L), eq(TimeUnit.MILLISECONDS))
-        verify(client, times(2)).subscribe("test", 1)
+        verify(client, times(2)).subscribe("test", 2)
         verify(listener, times(2)).onConnected()
     }
 }

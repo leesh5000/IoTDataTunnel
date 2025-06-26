@@ -5,7 +5,10 @@ fun main() {
 
     val subscriber = MqttBufferedSubscriber.builder()
         .brokerUrl("tcp://broker.hivemq.com:1883")
+        .initialDelay(1000)
+        .maxDelay(60000)
         .addTopic("sensors/data")
+        .qos(1)
         .build()
 
     subscriber.addListener(object : MqttBufferedSubscriber.ConnectionListener, MqttBufferedSubscriber.MessageListener {
