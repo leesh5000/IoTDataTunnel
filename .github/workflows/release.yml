@@ -41,6 +41,7 @@ jobs:
 
       - name: Generate changelog
         id: changelog
+        if: steps.tagcheck.outputs.exists == 'false'
         run: |
           PREV=$(git describe --tags --abbrev=0 HEAD^ 2>/dev/null || echo '')
           if [ -z "$PREV" ]; then
@@ -51,6 +52,10 @@ jobs:
           cat CHANGELOG.txt
           LOG=$(sed ':a;N;$!ba;s/\n/%0A/g' CHANGELOG.txt)
           echo "log=$LOG" >> $GITHUB_OUTPUT
+
+      - name: Tag already exists message
+        if: steps.tagcheck.outputs.exists == 'true'
+        run: echo "동일한 태그가 존재하여 중단한다"
 
       - name: Create Release
         if: steps.tagcheck.outputs.exists == 'false'

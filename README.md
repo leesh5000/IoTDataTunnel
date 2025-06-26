@@ -1,6 +1,6 @@
 # IoTDataTunnel
 
-[![](https://jitpack.io/v/leesh5000/IoTDataTunnel.svg)](https://jitpack.io/#leesh5000/IoTDataTunnel)
+[![JitPack](https://jitpack.io/v/leesh5000/IoTDataTunnel.svg)](https://jitpack.io/#leesh5000/IoTDataTunnel)
 ![MIT License](https://img.shields.io/badge/license-MIT-blue.svg)
 
 ```json
