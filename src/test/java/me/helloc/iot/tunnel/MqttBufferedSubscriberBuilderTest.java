@@ -9,9 +9,11 @@ import org.mockito.ArgumentCaptor;
 
 import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.ScheduledFuture;
+import java.util.concurrent.TimeUnit;
 
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.anyLong;
 import static org.mockito.Mockito.*;
 
 class MqttBufferedSubscriberBuilderTest {
@@ -19,7 +21,7 @@ class MqttBufferedSubscriberBuilderTest {
     void subscribesWithConfiguredQos() throws Exception {
         MqttAsyncClient client = mock(MqttAsyncClient.class);
         ScheduledExecutorService scheduler = mock(ScheduledExecutorService.class);
-        when(scheduler.schedule(any(Runnable.class), any(), any()))
+        when(scheduler.schedule(any(Runnable.class), anyLong(), any(TimeUnit.class)))
                 .thenReturn(mock(ScheduledFuture.class));
 
         MqttBufferedSubscriber manager = MqttBufferedSubscriber.builder()
