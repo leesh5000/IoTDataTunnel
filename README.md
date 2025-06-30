@@ -16,21 +16,21 @@
 }
 ```
 
-```kotlin
-val subscriber = MqttBufferedSubscriber.builder()
+```java
+MqttBufferedSubscriber subscriber = MqttBufferedSubscriber.builder()
     .brokerUrl("tcp://broker.hivemq.com:1883")
     .addTopic("sensors/data")
-    .build()
-subscriber.connect()
-val pair = subscriber.messageBuffer.poll()
+    .build();
+subscriber.connect();
+java.util.Map.Entry<String, String> pair = subscriber.messageBuffer.poll();
 if (pair != null) {
-    val (_, message) = pair
-    val value = PathFilterBuilder.from(message)
+    String message = pair.getValue();
+    Integer value = PathFilterBuilder.from(message)
         .addPathFilter("$.id", 1)
         .addPathFilter("$.sensor[0].type", "temp")
         .addValueFilter("$.sensor[0].value")
-        .extractFirst(Int::class.java)
-    println("Extracted value: $value") // Extracted value: 39
+        .extractFirst(Integer.class);
+    System.out.println("Extracted value: " + value); // Extracted value: 39
 }
 ```
 
@@ -38,6 +38,8 @@ if (pair != null) {
 
 산업 현장의 불안정한 네트워크 환경에서 MQTT 보일러플레이트를 제거하고
 센서 데이터에 특화된 JSON 추출 API를 제공하는 라이브러리 입니다.
+
+이 프로젝트는 Java 11 이상에서 동작하도록 작성되었습니다.
 
 ## Features
 
@@ -435,7 +437,7 @@ println("업데이트 간격: $updateInterval초, 임계값: $threshold")
 
 ### SimpleJsonParser
 
-JSON을 파싱하여 Kotlin 타입으로 변환하는 내부 클래스입니다. 객체는 Map으로, 배열은 List로, 문자열, 숫자, 불리언 및 null 값을 지원합니다.
+JSON을 파싱하여 Java 타입으로 변환하는 내부 클래스입니다. 객체는 Map으로, 배열은 List로, 문자열, 숫자, 불리언 및 null 값을 지원합니다.
 
 > 이 클래스는 내부적으로 사용되며, 일반적으로 직접 사용하지 않습니다. 대신 `PathFilterBuilder`를 통해 JSON 메시지를 처리합니다.
 
