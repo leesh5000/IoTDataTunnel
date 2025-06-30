@@ -207,7 +207,7 @@ public class MqttBufferedSubscriber {
 
         public MqttBufferedSubscriber build() {
             if (brokerUrl == null || brokerUrl.isEmpty()) {
-                throw new IllegalArgumentException("brokerUrl");
+                throw new IllegalArgumentException("brokerUrl must not be null or empty");
             }
             return new MqttBufferedSubscriber(this);
         }
