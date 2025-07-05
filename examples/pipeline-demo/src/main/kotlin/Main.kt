@@ -11,7 +11,8 @@ fun main() {
         .qos(1)
         .build()
 
-    subscriber.addListener(object : MqttBufferedSubscriber.ConnectionListener, MqttBufferedSubscriber.MessageListener {
+    // DefaultMqttListener 어댑터를 사용하여 필요한 메서드만 구현
+    val listener = object : MqttBufferedSubscriber.DefaultMqttListener() {
         override fun onConnected() {
             println("Connected")
         }
@@ -20,27 +21,18 @@ fun main() {
             println("Connection lost: ${cause.message}")
         }
 
-        override fun onDisconnected() {
-            println("Disconnected")
-        }
-
         override fun onMessageReceived(topic: String, message: String) {
             println("Message received on topic '$topic': $message")
-            subscriber.messageBuffer.add(
-                topic,
-                message
-            )
+            subscriber.messageBuffer.add(topic, message)
         }
-
-        override fun onBufferedBefore(topic: String, message: String) {
-            println("Buffered message on topic '$topic': $message")
-        }
-
-        override fun onBufferedAfter(topic: String, message: String) {
-            println("Buffered message after processing on topic '$topic': $message")
-        }
-
-    })
+        
+        // onDisconnected(), onBufferedBefore(), onBufferedAfter()는 
+        // 구현하지 않아도 됨 - 기본 빈 구현 사용
+    }
+    
+    // 하나의 리스너를 ConnectionListener와 MessageListener 모두에 등록
+    subscriber.addListener(listener)
+    subscriber.addMessageListener(listener)
 
     subscriber.connect()
 

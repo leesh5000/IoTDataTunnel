@@ -216,4 +216,70 @@ public class MqttBufferedSubscriber {
     public static Builder builder() {
         return new Builder();
     }
+
+    /**
+     * Default adapter implementation of ConnectionListener.
+     * Provides empty implementations of all methods.
+     */
+    public static abstract class DefaultConnectionListener implements ConnectionListener {
+        @Override
+        public void onConnected() {
+        }
+
+        @Override
+        public void onConnectionLost(Throwable cause) {
+        }
+
+        @Override
+        public void onDisconnected() {
+        }
+    }
+
+    /**
+     * Default adapter implementation of MessageListener.
+     * Provides empty implementations of all methods.
+     */
+    public static abstract class DefaultMessageListener implements MessageListener {
+        @Override
+        public void onMessageReceived(String topic, String message) {
+        }
+
+        @Override
+        public void onBufferedBefore(String topic, String message) {
+        }
+
+        @Override
+        public void onBufferedAfter(String topic, String message) {
+        }
+    }
+
+    /**
+     * Default adapter implementation of both ConnectionListener and MessageListener.
+     * Provides empty implementations of all methods from both interfaces.
+     */
+    public static abstract class DefaultMqttListener implements ConnectionListener, MessageListener {
+        @Override
+        public void onConnected() {
+        }
+
+        @Override
+        public void onConnectionLost(Throwable cause) {
+        }
+
+        @Override
+        public void onDisconnected() {
+        }
+
+        @Override
+        public void onMessageReceived(String topic, String message) {
+        }
+
+        @Override
+        public void onBufferedBefore(String topic, String message) {
+        }
+
+        @Override
+        public void onBufferedAfter(String topic, String message) {
+        }
+    }
 }
